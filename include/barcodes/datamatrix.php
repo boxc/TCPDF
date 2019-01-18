@@ -732,17 +732,30 @@ class Datamatrix {
 						} else {
 							// get new byte
 							$chr = ord($data[$pos]);
-							++$pos;
 							if ($this->isCharMode($chr, ENC_ASCII_EXT)) {
 								// 3. If the next data character is extended ASCII (greater than 127) encode it in ASCII mode first using the Upper Shift (value 235) character.
-								$cw[] = 235;
-								$cw[] = ($chr - 127);
-								$cw_num += 2;
+								/**
+								* Added GS1 Support
+								* Some base256 chars are preserved rather than shifting.
+								* FNC1 at beginning of code is kept but converted to ASCII code 29 
+								* when used as a group separator.
+								*/
+								if (($chr == 232) OR ($chr == 233) OR ($chr == 234) OR ($chr == 241)) {
+									// $cw[] = ($chr == 232 && $pos == 0) ? $chr : 29;
+									$cw[] = $chr;
+									++$cw_num;
+								}
+								else {
+									$cw[] = 235;
+									$cw[] = ($chr - 127);
+									$cw_num += 2;
+								}
 							} else {
 								// 4. Otherwise process the next data character in ASCII encodation.
 								$cw[] = ($chr + 1);
 								++$cw_num;
 							}
+							++$pos;
 						}
 					}
 					break;
