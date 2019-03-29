@@ -1112,25 +1112,51 @@ class TCPDFBarcode {
 				}
 				break;
 			}
+			/**
+			* @author Justin
+			* Previous code couldn't handle multiple FNC1 values in the code
+			* like it should have.
+			*/
 			case 'C': { // MODE C
 				$startid = 105;
-				if (ord($code[0]) == 241) {
-					$code_data[] = 102;
-					$code = substr($code, 1);
-					--$len;
-				}
-				if (($len % 2) != 0) {
-					// the length must be even
-					return false;
-				}
-				for ($i = 0; $i < $len; $i+=2) {
-					$chrnum = $code{$i}.$code{$i+1};
-					if (preg_match('/([0-9]{2})/', $chrnum) > 0) {
-						$code_data[] = intval($chrnum);
-					} else {
-						return false;
+				$i = 0;
+				while ($i < $len)
+				{
+					if (ord($code[$i]) == 241)
+					{
+						$code_data[] = 102;
+						$i++;
+					}
+					else
+					{
+						if ($i + 1 >= $len)
+							return false;
+						$chrnum = $code{$i}.$code{$i+1};
+						if (preg_match('/([0-9]{2})/', $chrnum) > 0) {
+							$code_data[] = intval($chrnum);
+						} else {
+							return false;
+						}
+						$i += 2;
 					}
 				}
+				// if (ord($code[0]) == 241) {
+				// 	$code_data[] = 102;
+				// 	$code = substr($code, 1);
+				// 	--$len;
+				// }
+				// if (($len % 2) != 0) {
+				// 	// the length must be even
+				// 	return false;
+				// }
+				// for ($i = 0; $i < $len; $i+=2) {
+				// 	$chrnum = $code{$i}.$code{$i+1};
+				// 	if (preg_match('/([0-9]{2})/', $chrnum) > 0) {
+				// 		$code_data[] = intval($chrnum);
+				// 	} else {
+				// 		return false;
+				// 	}
+				// }
 				break;
 			}
 			default: { // MODE AUTO
