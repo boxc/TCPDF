@@ -1869,7 +1869,21 @@ class TCPDFBarcode {
 		$k = 0;
 		$w = 0;
 		$seq = '';
-		$code = 'A'.strtoupper($code).'A';
+
+		/**
+		 * Allow for manual specification of start and stop control characters.
+		 *
+		 * @author Justin Pope<justin@boxc.com>
+		 */
+		$code = strtoupper($code);
+		if (preg_match("/[A-D]/", substr($code, 0, 1)) === false) {
+			$code = 'A'.$code;
+		}
+
+		if (preg_match("/[A-D]/", substr($code, -1)) === false) {
+			$code .= 'A';
+		}
+
 		$len = strlen($code);
 		for ($i = 0; $i < $len; ++$i) {
 			if (!isset($chr[$code[$i]])) {
