@@ -1872,7 +1872,6 @@ class TCPDFBarcode {
 
 		/**
 		 * Allow for manual specification of start and stop control characters.
-		 *
 		 * @author Justin Pope<justin@boxc.com>
 		 */
 		$code = strtoupper($code);
@@ -1891,12 +1890,19 @@ class TCPDFBarcode {
 			}
 			$seq = $chr[$code[$i]];
 			for ($j = 0; $j < 8; ++$j) {
+				$w = (float)$seq[$j];
+
 				if (($j % 2) == 0) {
 					$t = true; // bar
 				} else {
 					$t = false; // space
+					/**
+					 * Increase width of white space by 25% for old scanners.
+					 * @author Justin Pope<justin@boxc.com>
+					 */
+					$w *= 1.25;
 				}
-				$w = (float)$seq[$j];
+
 				$bararray['bcode'][$k] = array('t' => $t, 'w' => $w, 'h' => 1, 'p' => 0);
 				$bararray['maxw'] += $w;
 				++$k;
